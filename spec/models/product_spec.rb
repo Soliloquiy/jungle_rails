@@ -22,6 +22,8 @@ RSpec.describe Product, type: :model do
       expect(@category.products[0].price).to be_present
       expect(@category.products[0].quantity).to be_present
       expect(@category.products[0].category_id).to be_present
+
+      expect(@category.products[0].errors.full_messages.length).to eql(0)
     end
     
 
@@ -39,6 +41,9 @@ RSpec.describe Product, type: :model do
       @product.save
       
       expect(@product).not_to be_valid
+
+      expect(@product.errors.full_messages.length).to eql(1)
+
     end
 
     it "is not valid without a price" do
@@ -54,7 +59,12 @@ RSpec.describe Product, type: :model do
       @product.category_id = @category.id
       @product.save
       
+      
       expect(@product).not_to be_valid
+
+      expect(@product.errors.full_messages.length).to eql(3)
+
+
     end
 
     it "is not valid without a quantity" do
@@ -69,8 +79,12 @@ RSpec.describe Product, type: :model do
       @product.quantity = nil
       @product.category_id = @category.id
       @product.save
+
       
       expect(@product).not_to be_valid
+
+      expect(@product.errors.full_messages.length).to eql(1)
+
     end
 
     it "is not valid without a category_id" do
@@ -82,11 +96,14 @@ RSpec.describe Product, type: :model do
       @product = Product.new
       @product.name = "Phone"
       @product.price_cents = 2000
-      @product.quantity = nil
+      @product.quantity = 5
       @product.category_id = nil
       @product.save
       
       expect(@product).not_to be_valid
+
+      expect(@product.errors.full_messages.length).to eql(1)
+
     end
 
   end
