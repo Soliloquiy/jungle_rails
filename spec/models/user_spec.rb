@@ -92,5 +92,58 @@ RSpec.describe User, type: :model do
       end
     end
 
+    context 'authenticating with credentials' do
+      it "is valid if email is in db and password matches email" do
+        @user = User.create(first_name: 'Adam', last_name: 'Eve', password: 'password', password_confirmation: 'password', email: 'testing')
+        @authenticate = User.authenticate_with_credentials('testing', 'password')
+  
+        expect(@authenticate).to eql(@user)
+      end
+  
+      it "is valid if email is correct, in different case, with whitespace and password matches" do
+        @user = User.create(first_name: 'Adam', last_name: 'Eve', password: 'password', password_confirmation: 'password', email: 'testing')
+        @authenticate = User.authenticate_with_credentials(' TeStInG   ', 'password')
+  
+        expect(@authenticate).to eql(@user)
+  
+      end
+  
+      it "is invalid if user does not input an email" do
+        @user = User.create(first_name: 'Adam', last_name: 'Eve', password: 'password', password_confirmation: 'password', email: 'testing')
+        @authenticate = User.authenticate_with_credentials(nil, 'password')
+  
+        expect(@authenticate).to eql(nil)
+      end
+  
+      it "is invalid if user does not input a password" do
+        @user = User.create(first_name: 'Adam', last_name: 'Eve', password: 'password', password_confirmation: 'password', email: 'testing')
+        @authenticate = User.authenticate_with_credentials('test', nil)
+  
+        expect(@authenticate).to eql(nil)
+      end
+  
+      it "is invalid if user inputs nothing" do
+        @user = User.create(first_name: 'Adam', last_name: 'Eve', password: 'password', password_confirmation: 'password', email: 'testing')
+        @authenticate = User.authenticate_with_credentials(nil, nil)
+  
+        expect(@authenticate).to eql(nil)
+      end
+  
+      it "is invalid if user inputs right email, but the wrong password, is case sensitive" do
+        @user = User.create(first_name: 'Adam', last_name: 'Eve', password: 'password', password_confirmation: 'password', email: 'testing')
+        @authenticate = User.authenticate_with_credentials('testing', 'Password')
+  
+        expect(@authenticate).to eql(nil)
+      end
+  
+      it "is valid if user logs in with spaces in email (case-insensitive)" do
+        @user = User.create(first_name: 'Adam', last_name: 'Eve', password: 'password', password_confirmation: 'password', email: 'testing')
+        @authenticate = User.authenticate_with_credentials(' testing', 'password')
+  
+        expect(@authenticate).to eql(@user)
+      end
+  
+    end
+
   end
 end
